@@ -191,6 +191,7 @@ async function fetchData() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             var data = await response.json();
+            console.log(data)
             var name = file.name.replace(".json", "");
             jsonData[name] = data[name];
         } catch (error) {
