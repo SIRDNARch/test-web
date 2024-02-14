@@ -179,7 +179,7 @@ function handleAccordion(itemId, collapse) {
 async function fetchData() {
     var jsonData = {};
     var runs = [];
-    var resultsPath = window.location.pathname.replace(/www\/.*/, "results/");
+    var resultsPath = "results/";
 
     let data = await fetch(resultsPath).then(response => response.text());
 
