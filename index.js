@@ -181,19 +181,8 @@ async function fetchData() {
     var runs = [];
     var resultsPath = "https://api.github.com/repos/SIRDNARch/test-web/contents/results";
 
-    let data = await fetch(resultsPath).then(response => response.text());
-
-    let fileFetchPromises = $(data).find("a").map(function() {
-        var file = $(this).attr("href");
-        runs.push(file);
-        return fetch(`/results/${file}`).then(response => response.json());
-    }).get();
-
-    let fileDataArray = await Promise.all(fileFetchPromises);
-    fileDataArray.forEach((fileData, index) => {
-        var name = runs[index].replace(".json", "");
-        jsonData[name] = fileData[name];
-    });
+    let data = await fetch(resultsPath).then(response => response.json());
+    console.log(data)
 
     return jsonData;
 }
