@@ -179,7 +179,7 @@ function handleAccordion(itemId, collapse) {
 async function fetchData() {
     var jsonData = {};
     var runs = [];
-    var resultsPath = "results";
+    var resultsPath = "https://api.github.com/repos/SIRDNARch/test-web/contents/results";
 
     let data = await fetch(resultsPath).then(response => response.text());
 
