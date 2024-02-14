@@ -178,11 +178,32 @@ function handleAccordion(itemId, collapse) {
 
 async function fetchData() {
     var jsonData = {};
-    var runs = [];
     var resultsPath = "https://api.github.com/repos/SIRDNARch/test-web/contents/results";
 
-    let data = await fetch(resultsPath).then(response => response.json());
-    console.log(data)
+    let fileList = await fetch(resultsPath).then(response => response.json());
+  
+    for (var file of fileList) {
+        var fileUrl = "https://sirdnarch.github.io/test-web/" + file.path;
+
+        try {
+            var response = await fetch(fileUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            var data = await response.json();
+            var name = file.name.replace(".json", "");
+            jsonData[name] = data[name];
+        } catch (error) {
+            console.error("Error fetching file:", file.name, error);
+        }
+        return jsonData;
+    }
+
+    let fileDataArray = await Promise.all(fileFetchPromises);
+    fileDataArray.forEach((fileData, index) => {
+        var name = runs[index].replace(".json", "");
+        jsonData[name] = fileData[name];
+    });
 
     return jsonData;
 }
