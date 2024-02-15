@@ -181,10 +181,10 @@ async function fetchData() {
     var resultsPath = "https://api.github.com/repos/SIRDNARch/test-web/contents/results";
 
     let fileList = await fetch(resultsPath).then(response => response.json());
-  
+    console.log(fileList)
     for (var file of fileList) {
         var fileUrl = "https://sirdnarch.github.io/test-web/" + file.path;
-
+        console.log(file)
         try {
             var response = await fetch(fileUrl);
             if (!response.ok) {
