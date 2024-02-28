@@ -4,6 +4,10 @@ $(document).ready(async function () {
     var selectedRun = Object.keys(jsonData)[0];
     $(`#table-select-runs1 tr[data-name=${selectedRun}]`).addClass("row-selected");
     var selectedRun2 = -1;
+    if (Object.keys(jsonData).length == 2) {
+        selectedRun2 =  Object.keys(jsonData)[1]
+        handleAccordion("collapse-two", false);
+    }
     var jsonArray = getTestRun(selectedRun, selectedRun2, jsonData);
     var currentArray = jsonArray;
     var currentTestName = -1;
@@ -177,27 +181,61 @@ function handleAccordion(itemId, collapse) {
 }
 
 async function fetchData() {
+    var loadAll = true;
     var jsonData = {};
     var resultsPath = "https://api.github.com/repos/SIRDNARch/test-web/contents/results";
+    var fullPath = window.location.pathname;
+    var fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
+    fileName = fileName.split('.').slice(0, -1).join('.');
+    if (fileName.includes("-")) {
+        var parts = fileName.split('-');
+        run1 = parts[1];
+        run2 = parts[2];
+        loadAll = false;
+    }
+    
+
 
     let fileList = await fetch(resultsPath).then(response => response.json());
-    for (var file of fileList) {
-        var fileUrl = "https://sirdnarch.github.io/test-web/" + file.path;
-        try {
-            var response = await fetch(fileUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    if (loadAll){
+        for (var file of fileList) {
+            var fileUrl = "https://sirdnarch.github.io/test-web/" + file.path;
+            try {
+                var response = await fetch(fileUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                var data = await response.json();
+                var name = file.name.replace(".json", "");
+                jsonData[name] = data[name];
+            } catch (error) {
+                console.error("Error fetching file:", file.name, error);
             }
-            var data = await response.json();
-            console.log(data)
-            var name = file.name.replace(".json", "");
-            jsonData[name] = data[name];
-        } catch (error) {
-            console.error("Error fetching file:", file.name, error);
         }
+    
+        return jsonData;
     }
-
-    return jsonData;
+    else
+    {
+        fileList = [run1,  run2]
+        for (var file of fileList) {
+            var fileUrl = "https://sirdnarch.github.io/test-web/results/" + file + ".json";
+            try {
+                var response = await fetch(fileUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                var data = await response.json();
+                var name = file;
+                jsonData[name] = data[name];
+                console.log(jsonData)
+            } catch (error) {
+                console.error("Error fetching file:", file + ".json", error);
+            }
+        }
+    
+        return jsonData;
+    }
 }
 
 function getTestRun(run1, run2, jsonData) {
