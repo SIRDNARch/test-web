@@ -1,8 +1,12 @@
 
 $(document).ready(async function () {
+    console.log("Test")
     var data = await fetchData();
     var jsonData = data[0];
     var nameMap = data[1];
+    console.log(data)
+    console.log(jsonData)
+    console.log(nameMap)
     var selectedRun = Object.keys(jsonData)[0];
     $(`#table-select-runs1 tr[data-name=${selectedRun}]`).addClass("row-selected");
     var selectedRun2 = -1;
@@ -320,7 +324,10 @@ async function fetchData() {
     
 
     var nameMap = await fetch("https://api.github.com/repos/SIRDNARch/test-web/contents/name_map.json").then(response => response.json());
+    console.log(nameMap)
     let fileList = await fetch(resultsPath).then(response => response.json());
+    console.log(loadAll)
+    console.log(fileList)
     if (loadAll){
         for (var file of fileList) {
             var fileUrl = "https://sirdnarch.github.io/test-web/" + file.path;
@@ -331,13 +338,14 @@ async function fetchData() {
                 }
                 var data = await response.json();
                 var name = file.name.replace(".json", "");
-                jsonData[name] = data[name];
+                console.log(name)
+                jsonData[name] = data;
             } catch (error) {
                 console.error("Error fetching file:", file.name, error);
             }
         }
     
-        return jsonData;
+        return [jsonData, nameMap];
     }
     else
     {
@@ -351,7 +359,7 @@ async function fetchData() {
                 }
                 var data = await response.json();
                 var name = file;
-                jsonData[name] = data[name];
+                jsonData[name] = data;
                 console.log(jsonData)
             } catch (error) {
                 console.error("Error fetching file:", file + ".json", error);
